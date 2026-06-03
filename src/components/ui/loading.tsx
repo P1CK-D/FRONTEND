@@ -134,7 +134,6 @@ export default function LoadingScreen({
   );
 }
 
-// ── 번개 아이콘 (SVG 없이 순수 View로 구현) ───────────────
 <IconBolt size={38} color="#fff" strokeWidth={2.2} />
 
 const boltStyles = StyleSheet.create({
