@@ -8,10 +8,19 @@ export interface LoginResult {
   error?: string;
 }
 
+WebBrowser.maybeCompleteAuthSession();
+
 export const initiateGoogleLogin = async (): Promise<LoginResult> => {
   try {
-    const oauthUrl = `${apiClient.defaults.baseURL}/oauth2/authorization/google`;
-    const redirectUrl = Linking.createURL('auth/callback');
+    // Expo Go와 Development Build 모두 지원
+    const redirectUrl = Linking.createURL('auth/callback', {
+      scheme: 'pickdo'
+    });
+
+    const oauthUrl = `${apiClient.defaults.baseURL}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+
+    console.log('OAuth URL:', oauthUrl);
+    console.log('Redirect URL:', redirectUrl);
 
     const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
 
