@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { initiateGoogleLogin } from '../api/login';
+import { authStorage } from '@/shared/lib';
 
 export function LoginScreen() {
   const router = useRouter();
@@ -14,8 +15,8 @@ export function LoginScreen() {
       const result = await initiateGoogleLogin();
 
       if (result.success && result.token) {
-        
-        console.log('Login successful, token:', result.token);
+        await authStorage.saveToken(result.token);
+        console.log('Token saved, navigating to onboarding');
         router.push('/onboarding/name');
       } else {
         const errorMessage = getErrorMessage(result.error);

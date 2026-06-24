@@ -12,7 +12,6 @@ WebBrowser.maybeCompleteAuthSession();
 
 export const initiateGoogleLogin = async (): Promise<LoginResult> => {
   try {
-    // Expo Go와 Development Build 모두 지원
     const redirectUrl = Linking.createURL('auth/callback', {
       scheme: 'pickdo'
     });
