@@ -16,14 +16,12 @@ export function LoginScreen() {
 
       if (result.success && result.token) {
         await authStorage.saveToken(result.token);
-        console.log('Token saved, navigating to onboarding');
         router.push('/onboarding/name');
       } else {
         const errorMessage = getErrorMessage(result.error);
         Alert.alert('로그인 실패', errorMessage);
       }
     } catch (error) {
-      console.error('Login error:', error);
       Alert.alert('로그인 실패', '예상치 못한 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
