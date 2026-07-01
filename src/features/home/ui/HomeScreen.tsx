@@ -25,7 +25,6 @@ export function HomeScreen() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.username}>강준석님</Text>
@@ -43,7 +42,6 @@ export function HomeScreen() {
           </View>
         </View>
 
-        {/* Growth Index Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>오늘의 성장 지수</Text>
           <View style={styles.growthCard}>
@@ -60,7 +58,6 @@ export function HomeScreen() {
           </View>
         </View>
 
-        {/* Today's Missions Section */}
         <View style={styles.section}>
           <View style={styles.missionHeader}>
             <Text style={styles.sectionTitle}>오늘의 미션</Text>
@@ -89,7 +86,6 @@ export function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* Current Mission Card */}
       <View style={styles.currentMissionCard}>
         <View style={styles.missionIconContainer}>
           <Image
