@@ -18,7 +18,9 @@ export const initiateGoogleLogin = async (): Promise<LoginResult> => {
 
     const oauthUrl = `${apiClient.defaults.baseURL}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
-    const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
+    const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl, {
+      preferEphemeralSession: true
+    });
 
     if (result.type === 'success') {
       const url = result.url;

@@ -1,16 +1,25 @@
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { authStorage } from '@/shared/lib';
 
 export function SplashScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push('/login');
-    }, 3000);
+    const checkAuthAndNavigate = async () => {
+      const hasToken = await authStorage.hasToken();
 
-    return () => clearTimeout(timer);
+      setTimeout(() => {
+        if (hasToken) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/login');
+        }
+      }, 3000);
+    };
+
+    checkAuthAndNavigate();
   }, [router]);
 
   return (
@@ -45,6 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   quoteContainer: {
+    width: 250,
     position: 'absolute',
     bottom: 158,
     alignItems: 'center',
