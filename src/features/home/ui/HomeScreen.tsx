@@ -1,6 +1,7 @@
 import { authStorage } from '@/shared/lib';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CurrentMissionBar } from '@/components/ui';
 
 const MISSIONS = [
   {
@@ -101,18 +102,10 @@ export function HomeScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.currentMissionCard}>
-        <View style={styles.missionIconContainer}>
-          <Image
-            source={{ uri: 'https://www.figma.com/api/mcp/asset/b9e77069-c144-42dc-a944-70575775d20e' }}
-            style={styles.missionIcon}
-          />
-        </View>
-        <View style={styles.currentMissionText}>
-          <Text style={styles.currentMissionLabel}>현재 진행 중인 미션</Text>
-          <Text style={styles.currentMissionTitle}>러닝 2km</Text>
-        </View>
-      </View>
+      <CurrentMissionBar
+        iconUrl="https://www.figma.com/api/mcp/asset/b9e77069-c144-42dc-a944-70575775d20e"
+        title="러닝 2km"
+      />
     </View>
   );
 }
@@ -268,49 +261,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     color: '#fff',
-  },
-  currentMissionCard: {
-    position: 'absolute',
-    bottom: 20,
-    left: 26,
-    right: 26,
-    backgroundColor: '#33dac1',
-    borderRadius: 4,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    shadowColor: '#395d59',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  missionIconContainer: {
-    width: 42,
-    height: 42,
-    borderRadius: 9999,
-    backgroundColor: '#8aeae0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  missionIcon: {
-    width: 42,
-    height: 74,
-  },
-  currentMissionText: {
-    flex: 1,
-    gap: 2,
-  },
-  currentMissionLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#007367',
-  },
-  currentMissionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000',
   },
 });
