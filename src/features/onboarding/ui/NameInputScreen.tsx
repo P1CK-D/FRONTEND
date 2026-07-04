@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { authStorage } from '@/shared/lib';
 
 export function NameInputScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (name.trim()) {
+      await authStorage.saveUserName(name.trim());
       router.push('/onboarding/dopamine-selection');
     }
   };
@@ -67,6 +69,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   progressBarContainer: {
+    top:20,
     height: 6,
     backgroundColor: '#f2f1f3',
     borderRadius: 9999,
@@ -80,15 +83,16 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   title: {
+    top:'20%',
     fontSize: 24,
     fontWeight: '600',
     color: '#000',
     textAlign: 'center',
     lineHeight: 30,
     marginBottom: 163,
-    letterSpacing: 1.2,
   },
   inputContainer: {
+    marginTop: '10%',
     marginBottom: 'auto',
     paddingHorizontal: 34,
   },
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#797783',
+    color: 'black',
     flex: 1,
     paddingVertical: 5,
     borderWidth: 0,

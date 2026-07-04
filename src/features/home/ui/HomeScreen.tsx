@@ -1,4 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { authStorage } from '@/shared/lib';
+import { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const MISSIONS = [
   {
@@ -22,12 +24,25 @@ const MISSIONS = [
 ];
 
 export function HomeScreen() {
+  const [userName, setUserName] = useState<string>('사용자');
+
+  useEffect(() => {
+    const loadUserName = async () => {
+      const name = await authStorage.getUserName();
+      if (name) {
+        setUserName(name);
+      }
+    };
+
+    loadUserName();
+  }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.username}>강준석님</Text>
+            <Text style={styles.username}>{userName}님</Text>
             <View style={styles.levelBadge}>
               <Text style={styles.levelText}>Level 999</Text>
             </View>
@@ -111,6 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    marginTop: '10%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -153,6 +169,7 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 26,
     marginBottom: 30,
+    marginTop: 10,
   },
   sectionTitle: {
     fontSize: 20,
@@ -254,7 +271,7 @@ const styles = StyleSheet.create({
   },
   currentMissionCard: {
     position: 'absolute',
-    bottom: 106,
+    bottom: 20,
     left: 26,
     right: 26,
     backgroundColor: '#33dac1',

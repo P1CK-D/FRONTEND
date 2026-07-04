@@ -1,6 +1,13 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState, useEffect } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { authStorage } from '@/shared/lib';
 
 const DOPAMINE_OPTIONS = [
   { id: 1, label: '릴스/숏폼', icon: '🔥' },
@@ -17,12 +24,22 @@ const DOPAMINE_OPTIONS = [
 export function DopamineSelectionScreen() {
   const router = useRouter();
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [userName, setUserName] = useState<string>('');
+
+  useEffect(() => {
+    const loadUserName = async () => {
+      const name = await authStorage.getUserName();
+      if (name) {
+        setUserName(name);
+      }
+    };
+
+    loadUserName();
+  }, []);
 
   const toggleItem = (id: number) => {
     setSelectedItems((prev) =>
-      prev.includes(id)
-        ? prev.filter((item) => item !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
@@ -41,7 +58,7 @@ export function DopamineSelectionScreen() {
       </View>
 
       <Text style={styles.title}>
-        효상님이 뿌리치고 싶은{'\n'}도파민을 두 가지 이상 선택하세요!
+        {userName}님이 뿌리치고 싶은{'\n'}도파민을 두 가지 이상 선택하세요!
       </Text>
       <Text style={styles.subtitle}>도파민 미션에 반영돼요</Text>
 
@@ -69,7 +86,10 @@ export function DopamineSelectionScreen() {
       </ScrollView>
 
       <TouchableOpacity
-        style={[styles.nextButton, !isButtonEnabled && styles.nextButtonDisabled]}
+        style={[
+          styles.nextButton,
+          !isButtonEnabled && styles.nextButtonDisabled,
+        ]}
         onPress={handleNext}
         disabled={!isButtonEnabled}
       >
@@ -87,6 +107,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   progressBarContainer: {
+    top:20,
     height: 6,
     backgroundColor: '#f2f1f3',
     borderRadius: 9999,
@@ -100,6 +121,7 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   title: {
+    top:'5%',
     fontSize: 24,
     fontWeight: '600',
     color: '#000',
@@ -108,6 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
+    top:'5%',
     fontSize: 16,
     fontWeight: '400',
     color: '#94929c',
@@ -119,6 +142,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   optionsContainer: {
+    marginTop:'10%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
@@ -126,6 +150,7 @@ const styles = StyleSheet.create({
   },
   optionItem: {
     width: '30%',
+    height:'50%',
     aspectRatio: 1,
     backgroundColor: '#f2f1f3',
     borderRadius: 4,

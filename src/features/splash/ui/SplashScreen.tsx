@@ -8,6 +8,9 @@ export function SplashScreen() {
 
   useEffect(() => {
     const checkAuthAndNavigate = async () => {
+      // 개발 중 토큰 삭제 (테스트용) - 나중에 제거할 것
+      await authStorage.removeToken();
+
       const hasToken = await authStorage.hasToken();
 
       setTimeout(() => {
