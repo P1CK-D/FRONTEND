@@ -18,10 +18,9 @@ export const initiateGoogleLogin = async (): Promise<LoginResult> => {
 
     const oauthUrl = `${apiClient.defaults.baseURL}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
-    console.log('OAuth URL:', oauthUrl);
-    console.log('Redirect URL:', redirectUrl);
-
-    const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
+    const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl, {
+      preferEphemeralSession: true
+    });
 
     if (result.type === 'success') {
       const url = result.url;
@@ -42,7 +41,6 @@ export const initiateGoogleLogin = async (): Promise<LoginResult> => {
       return { success: false, error: 'oauth_failed' };
     }
   } catch (error) {
-    console.error('Google OAuth login error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'unknown_error',
