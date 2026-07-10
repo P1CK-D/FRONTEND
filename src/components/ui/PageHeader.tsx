@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
 export interface PageHeaderProps {
@@ -28,7 +29,7 @@ export function PageHeader({ title, onBackPress, showBackButton = true }: PageHe
           onPress={handleBackPress}
           activeOpacity={0.7}
         >
-          <Image source={{ uri: BACK_ICON_URL }} style={styles.backIcon} resizeMode="contain" />
+          <Image source={{ uri: BACK_ICON_URL }} style={styles.backIcon} contentFit="contain" />
         </TouchableOpacity>
       )}
       <Text style={styles.title}>{title}</Text>

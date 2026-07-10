@@ -1,4 +1,5 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PageHeader, ProgressBar } from '@/components/ui';
 
@@ -28,7 +29,7 @@ export default function MissionDetailScreen() {
           <View style={styles.detailCard}>
             <View style={styles.missionHeader}>
               <View style={styles.titleRow}>
-                <Image source={{ uri: ICON_RUN }} style={styles.missionIcon} resizeMode="contain" />
+                <Image source={{ uri: ICON_RUN }} style={styles.missionIcon} contentFit="contain" />
                 <Text style={styles.missionTitle}>러닝 2km</Text>
               </View>
               <ProgressBar progress={0.635} width={334} />
@@ -52,11 +53,12 @@ export default function MissionDetailScreen() {
                     key={index}
                     source={{ uri: avatar }}
                     style={[styles.avatar, { marginLeft: index === 0 ? 0 : -13 }]}
+                    contentFit="cover"
                   />
                 ))}
               </View>
               <TouchableOpacity style={styles.shareButton} activeOpacity={0.7}>
-                <Image source={{ uri: SHARE_ICON }} style={styles.shareIcon} resizeMode="contain" />
+                <Image source={{ uri: SHARE_ICON }} style={styles.shareIcon} contentFit="contain" />
               </TouchableOpacity>
             </View>
 

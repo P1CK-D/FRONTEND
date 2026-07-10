@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -164,12 +165,12 @@ export default function MissionTab() {
 
   const getMissionIcon = (mission: Mission) => {
     if (mission.iconUrl) {
-      return <Image source={{ uri: mission.iconUrl }} style={styles.missionIcon} resizeMode="contain" />;
+      return <Image source={{ uri: mission.iconUrl }} style={styles.missionIcon} contentFit="contain" />;
     }
 
     switch (mission.id) {
       case '1':
-        return <Image source={{ uri: ICON_RUN }} style={styles.missionIcon} resizeMode="contain" />;
+        return <Image source={{ uri: ICON_RUN }} style={styles.missionIcon} contentFit="contain" />;
       case '2':
         return <BookIcon />;
       case '4':
@@ -235,7 +236,7 @@ export default function MissionTab() {
               <View style={styles.detailCard}>
                 <View style={styles.missionHeader}>
                   <View style={styles.titleRow}>
-                    <Image source={{ uri: ICON_RUN }} style={styles.detailMissionIcon} resizeMode="contain" />
+                    <Image source={{ uri: ICON_RUN }} style={styles.detailMissionIcon} contentFit="contain" />
                     <Text style={styles.missionTitle}>러닝 2km</Text>
                   </View>
                   <ProgressBar progress={0.635} width={334} />
@@ -259,11 +260,12 @@ export default function MissionTab() {
                         key={index}
                         source={{ uri: avatar }}
                         style={[styles.avatar, { marginLeft: index === 0 ? 0 : -13 }]}
+                        contentFit="cover"
                       />
                     ))}
                   </View>
                   <TouchableOpacity style={styles.shareButton} activeOpacity={0.7}>
-                    <Image source={{ uri: SHARE_ICON }} style={styles.shareIcon} resizeMode="contain" />
+                    <Image source={{ uri: SHARE_ICON }} style={styles.shareIcon} contentFit="contain" />
                   </TouchableOpacity>
                 </View>
 

@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { usePathname, useRouter } from 'expo-router';
 
 const ICONS = {
@@ -60,7 +61,7 @@ export function NavigationBar({}: NavigationBarProps = {}) {
               <Image
                 source={{ uri: isActive ? tab.icon.active : tab.icon.inactive }}
                 style={styles.icon}
-                resizeMode="contain"
+                contentFit="contain"
               />
             </View>
             <Text style={[styles.label, isActive && styles.labelActive]}>

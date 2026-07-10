@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 
 export interface CurrentMissionBarProps {
   iconUrl: string;
@@ -10,7 +11,7 @@ export function CurrentMissionBar({ iconUrl, label = '현재 진행 중인 미�
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Image source={{ uri: iconUrl }} style={styles.icon} />
+        <Image source={{ uri: iconUrl }} style={styles.icon} contentFit="cover" />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.label}>{label}</Text>

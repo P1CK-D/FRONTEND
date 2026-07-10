@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { ProgressBar } from './ProgressBar';
 
 export interface MissionCardProps {
@@ -27,7 +28,7 @@ export function MissionCard({
         {iconComponent ? (
           iconComponent
         ) : iconUrl ? (
-          <Image source={{ uri: iconUrl }} style={styles.icon} resizeMode="contain" />
+          <Image source={{ uri: iconUrl }} style={styles.icon} contentFit="contain" />
         ) : null}
       </View>
       <View style={styles.textContainer}>

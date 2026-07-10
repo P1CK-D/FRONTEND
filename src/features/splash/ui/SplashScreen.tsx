@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { authStorage } from '@/shared/lib';
 
@@ -30,7 +31,7 @@ export function SplashScreen() {
       <Image
         source={require('../../../../assets/expo.icon/Assets/logo.svg')}
         style={styles.logo}
-        resizeMode="contain"
+        contentFit="contain"
       />
 
       <View style={styles.quoteContainer}>
