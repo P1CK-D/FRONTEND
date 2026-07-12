@@ -1,6 +1,7 @@
 import { authStorage } from '@/shared/lib';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 import { CurrentMissionBar } from '@/components/ui';
 
 const MISSIONS = [
@@ -88,7 +89,7 @@ export function HomeScreen() {
           >
             {MISSIONS.map((mission) => (
               <View key={mission.id} style={styles.missionCard}>
-                <Image source={{ uri: mission.image }} style={styles.missionImage} />
+                <Image source={{ uri: mission.image }} style={styles.missionImage} contentFit="cover" />
                 <View style={styles.missionOverlay} />
                 <View style={styles.missionContent}>
                   <Text style={styles.missionTitle}>{mission.title}</Text>
