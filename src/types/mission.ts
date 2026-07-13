@@ -6,7 +6,7 @@ export interface Mission {
   description: string;
   status: MissionStatus;
   category?: string;
-  iconUrl?: string;
+  iconUrl?: any;
   progress?: number;
   deadline?: string;
   completedAt?: string;
