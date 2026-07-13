@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { MissionCard, PageHeader, ProgressBar, SegmentedControl } from '@/components/ui';
@@ -11,7 +10,6 @@ import { MISSION_DETAIL_DATA } from '@/data/mockMissions';
 
 const MISSION_SEGMENTS = ['recommended', 'in_progress', 'completed'] as const;
 
-// PNG 아이콘 사용
 const ICON_RUN = require('@/assets/mdi_run.png');
 const ICON_CLOCK = require('@/assets/icon.png');
 const SHARE_ICON = require('@/assets/Vector.png');
@@ -43,11 +41,10 @@ function PhoneOffIcon() {
 }
 
 export default function MissionTab() {
-  const router = useRouter();
   const [selectedSegment, setSelectedSegment] = useState<MissionStatus>('in_progress');
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
 
-  const { getMissionsByStatus, getMissionById, startMission } = useMissionStore();
+  const { getMissionsByStatus, getMissionById, startMission, completeMission } = useMissionStore();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['58%'], []);
@@ -79,6 +76,12 @@ export default function MissionTab() {
       handleCloseBottomSheet();
     }
   }, [selectedMissionId, startMission]);
+
+  const handleVerifyMission = useCallback(() => {
+    if (selectedMissionId) {
+      completeMission(selectedMissionId);
+    }
+  }, [selectedMissionId, completeMission]);
 
   const getMissionIcon = (mission: Mission) => {
     if (mission.iconUrl) {
@@ -136,7 +139,7 @@ export default function MissionTab() {
                 progress={item.progress}
                 showProgress={showProgress}
                 onPress={
-                  selectedSegment === 'recommended'
+                  selectedSegment !== 'completed'
                     ? () => handleOpenBottomSheet(item.id)
                     : undefined
                 }
@@ -164,40 +167,35 @@ export default function MissionTab() {
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.detailContent}>
                 <View style={styles.detailCard}>
-                  <View style={styles.missionHeader}>
-                    <View style={styles.titleRow}>
-                      {getMissionIcon(selectedMission) ? (
-                        <View style={styles.detailMissionIconContainer}>
-                          {getMissionIcon(selectedMission)}
-                        </View>
-                      ) : null}
+                  <View style={styles.titleRow}>
+                    {getMissionIcon(selectedMission) ? (
+                      <View style={styles.detailIconBadge}>{getMissionIcon(selectedMission)}</View>
+                    ) : null}
+                    <View style={styles.titleTextGroup}>
                       <Text style={styles.missionTitle}>{selectedMission.title}</Text>
+                      {selectedMission.deadline && (
+                        <Text style={styles.deadline}>
+                          {new Date(selectedMission.deadline).toLocaleDateString('ko-KR', {
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                          까지
+                        </Text>
+                      )}
                     </View>
-                    {selectedMission.progress !== undefined && (
-                      <ProgressBar progress={selectedMission.progress} width={334} />
-                    )}
                   </View>
 
-                  <View style={styles.descriptionContainer}>
-                    <Text style={styles.description}>
-                      {missionDetail?.fullDescription || selectedMission.description}
-                    </Text>
-                  </View>
+                  {selectedMission.progress !== undefined && (
+                    <ProgressBar progress={selectedMission.progress} width={294} />
+                  )}
+
+                  <Text style={styles.description}>
+                    {missionDetail?.fullDescription || selectedMission.description}
+                  </Text>
                 </View>
 
-                {selectedMission.deadline && (
-                  <Text style={styles.deadline}>
-                    {new Date(selectedMission.deadline).toLocaleDateString('ko-KR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                    까지
-                  </Text>
-                )}
-
-                <View style={styles.actionSection}>
-                  <View style={styles.participantsRow}>
+                {selectedMission.status === 'recommended' && (
+                  <View style={styles.footerRow}>
                     <View style={styles.avatarGroup}>
                       {PARTICIPANT_AVATARS.map((avatar, index) => (
                         <Image
@@ -212,7 +210,9 @@ export default function MissionTab() {
                       <Image source={SHARE_ICON} style={styles.shareIcon} contentFit="contain" />
                     </TouchableOpacity>
                   </View>
+                )}
 
+                {selectedMission.status === 'recommended' && (
                   <TouchableOpacity
                     style={styles.startButton}
                     activeOpacity={0.8}
@@ -220,7 +220,30 @@ export default function MissionTab() {
                   >
                     <Text style={styles.startButtonText}>미션 진행하기</Text>
                   </TouchableOpacity>
-                </View>
+                )}
+
+                {selectedMission.status === 'in_progress' && (
+                  <TouchableOpacity
+                    style={styles.startButton}
+                    activeOpacity={0.8}
+                    onPress={handleVerifyMission}
+                  >
+                    <Text style={styles.startButtonText}>인증하기</Text>
+                  </TouchableOpacity>
+                )}
+
+                {selectedMission.status === 'completed' && (
+                  <>
+                    <Text style={styles.verifiedText}>미션 인증이 완료되었어요!</Text>
+                    <TouchableOpacity
+                      style={styles.startButton}
+                      activeOpacity={0.8}
+                      onPress={handleCloseBottomSheet}
+                    >
+                      <Text style={styles.startButtonText}>확인</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
             </ScrollView>
           )}
@@ -308,68 +331,59 @@ const styles = StyleSheet.create({
   },
   detailContent: {
     paddingBottom: 40,
-    gap: 38,
+    gap: 20,
   },
   detailCard: {
-    
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ebebeb',
     borderRadius: 16,
     padding: 20,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 5,
-  },
-  missionHeader: {
-    gap: 16,
+    gap: 14,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 12,
   },
-  detailMissionIconContainer: {
-    width: 30,
-    height: 30,
+  detailIconBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#e0f8f4',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  detailMissionIcon: {
-    width: 30,
-    height: 30,
+  titleTextGroup: {
+    flex: 1,
+    gap: 2,
   },
   missionTitle: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: '700',
     color: '#000',
-    flex: 1,
-  },
-  descriptionContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   description: {
-    fontSize: 18,
-    fontWeight: '400',
-    color: '#797783',
-    lineHeight: 28.8,
-  },
-  deadline: {
-    marginLeft:20,
     fontSize: 14,
     fontWeight: '400',
+    color: '#797783',
+    lineHeight: 21,
+  },
+  deadline: {
+    fontSize: 12,
+    fontWeight: '400',
     color: '#94929c',
-    lineHeight: 22.4,
   },
-  actionSection: {
-    gap: 16,
-    alignItems: 'flex-end',
+  verifiedText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#00beab',
+    textAlign: 'center',
   },
-  participantsRow: {
+  footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   avatarGroup: {
     flexDirection: 'row',
