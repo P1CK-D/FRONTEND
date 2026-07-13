@@ -2,30 +2,36 @@ import { authStorage } from '@/shared/lib';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { CurrentMissionBar } from '@/components/ui';
+
+const img1 = require('@/assets/splash/mission_img1.png');
+const img2 = require('@/assets/splash/mission_img2.png');
+const img3 = require('@/assets/splash/mission_img3.png');
 
 const MISSIONS = [
   {
     id: 1,
     title: 'AJ 미션',
     subtitle: 'AJ와 사진찍기',
-    image: 'https://www.figma.com/api/mcp/asset/f12e7243-94e5-41b1-9f50-bc633ef8b41b',
+    image: img1,
   },
   {
     id: 2,
     title: '2km 러닝하기',
     subtitle: '미션 설명',
-    image: 'https://www.figma.com/api/mcp/asset/20b95d53-29f0-43e4-b23f-16e65b6136b4',
+    image: img2,
   },
   {
     id: 3,
     title: '2km 러닝하기',
     subtitle: '러닝',
-    image: 'https://www.figma.com/api/mcp/asset/b9e77069-c144-42dc-a944-70575775d20e',
+    image: img3,
   },
 ];
 
 export function HomeScreen() {
+  const router = useRouter();
   const [userName, setUserName] = useState<string>('사용자');
 
   useEffect(() => {
@@ -88,8 +94,13 @@ export function HomeScreen() {
             contentContainerStyle={styles.missionsContainer}
           >
             {MISSIONS.map((mission) => (
-              <View key={mission.id} style={styles.missionCard}>
-                <Image source={{ uri: mission.image }} style={styles.missionImage} contentFit="cover" />
+              <TouchableOpacity
+                key={mission.id}
+                style={styles.missionCard}
+                onPress={() => router.push('/(tabs)/mission')}
+                activeOpacity={0.8}
+              >
+                <Image source={mission.image} style={styles.missionImage} contentFit="cover" />
                 <View style={styles.missionOverlay} />
                 <View style={styles.missionContent}>
                   <Text style={styles.missionTitle}>{mission.title}</Text>
@@ -97,14 +108,14 @@ export function HomeScreen() {
                     {mission.subtitle}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
       </ScrollView>
 
       <CurrentMissionBar
-        iconUrl="https://www.figma.com/api/mcp/asset/b9e77069-c144-42dc-a944-70575775d20e"
+        iconUrl={img3}
         title="러닝 2km"
       />
     </View>

@@ -6,18 +6,22 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { MissionCard, PageHeader, ProgressBar, SegmentedControl } from '@/components/ui';
 import { Mission, MissionStatus, MISSION_STATUS_LABELS } from '@/types/mission';
+import { useMissionStore } from '@/store/useMissionStore';
+import { MISSION_DETAIL_DATA } from '@/data/mockMissions';
 
 const MISSION_SEGMENTS = ['recommended', 'in_progress', 'completed'] as const;
 
-const ICON_RUN = 'https://www.figma.com/api/mcp/asset/738a55d6-e9a7-4989-96cb-1ce73a717091';
-const ICON_CLOCK = 'https://www.figma.com/api/mcp/asset/9d8f4e38-167a-42d7-8297-f3a2fd232518';
-const SHARE_ICON = 'https://www.figma.com/api/mcp/asset/677a10da-9e7a-49d4-b013-3ae22a0dfa86';
+// PNG 아이콘 사용
+const ICON_RUN = require('@/assets/mdi_run.png');
+const ICON_CLOCK = require('@/assets/icon.png');
+const SHARE_ICON = require('@/assets/Vector.png');
+const ICON_BOOK = require('@/assets/book-icon.png');
 
 const PARTICIPANT_AVATARS = [
-  'https://www.figma.com/api/mcp/asset/74a284ba-a053-4fbb-bbca-976a78ab9c77',
-  'https://www.figma.com/api/mcp/asset/50594f66-def2-492b-8d43-9bade980bae1',
-  'https://www.figma.com/api/mcp/asset/4a811686-2081-4c3a-97df-d504bf08572e',
-  'https://www.figma.com/api/mcp/asset/c83ecfb7-fbe5-4317-b47c-39a6a75ecdb9',
+  require('@/assets/images/missions/avatar-1.png'),
+  require('@/assets/images/missions/avatar-2.png'),
+  require('@/assets/images/missions/avatar-3.png'),
+  require('@/assets/images/missions/avatar-4.png'),
 ];
 
 function BookIcon() {
@@ -38,93 +42,12 @@ function PhoneOffIcon() {
   );
 }
 
-const MOCK_MISSIONS: Mission[] = [
-  {
-    id: '1',
-    title: '러닝 2km',
-    description: '오늘 자정까지',
-    status: 'in_progress',
-    progress: 0.6,
-  },
-  {
-    id: '2',
-    title: '플래너 빈칸 채우기',
-    description: 'D-1',
-    status: 'in_progress',
-    progress: 0.3,
-  },
-  {
-    id: '3',
-    title: '공부 타이머 1시간',
-    description: '오늘 자정까지',
-    status: 'in_progress',
-    iconUrl: ICON_CLOCK,
-    progress: 0.15,
-  },
-  {
-    id: '4',
-    title: 'SNS 사용 1시간 이내',
-    description: '진행중',
-    status: 'in_progress',
-    progress: 0.8,
-  },
-];
-
-const MOCK_RECOMMENDED_MISSIONS: Mission[] = [
-  {
-    id: 'r1',
-    title: '독서 20분',
-    description: '집중력 회복에 도움되는 활동',
-    status: 'recommended',
-  },
-  {
-    id: 'r2',
-    title: '명상 10분',
-    description: '도파민 리셋 추천 미션',
-    status: 'recommended',
-  },
-  {
-    id: 'r3',
-    title: '스트레칭 5분',
-    description: '앉아있는 시간이 길 때 추천',
-    status: 'recommended',
-  },
-  {
-    id: 'r4',
-    title: '알림 끄고 1시간',
-    description: 'SNS 절제 카테고리',
-    status: 'recommended',
-  },
-];
-
-const MOCK_COMPLETED_MISSIONS: Mission[] = [
-  {
-    id: 'c1',
-    title: '러닝 2km',
-    description: '7월 5일 완료',
-    status: 'completed',
-    completedAt: '2026-07-05',
-  },
-  {
-    id: 'c2',
-    title: '플래너 빈칸 채우기',
-    description: '7월 4일 완료',
-    status: 'completed',
-    completedAt: '2026-07-04',
-  },
-  {
-    id: 'c3',
-    title: '명상 10분',
-    description: '7월 3일 완료',
-    status: 'completed',
-    completedAt: '2026-07-03',
-  },
-];
-
 export default function MissionTab() {
   const router = useRouter();
   const [selectedSegment, setSelectedSegment] = useState<MissionStatus>('in_progress');
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+
+  const { getMissionsByStatus, getMissionById, startMission } = useMissionStore();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['58%'], []);
@@ -150,38 +73,44 @@ export default function MissionTab() {
     []
   );
 
-  const getMissionsForSegment = (segment: MissionStatus): Mission[] => {
-    switch (segment) {
-      case 'recommended':
-        return MOCK_RECOMMENDED_MISSIONS;
-      case 'in_progress':
-        return MOCK_MISSIONS;
-      case 'completed':
-        return MOCK_COMPLETED_MISSIONS;
-      default:
-        return [];
+  const handleStartMission = useCallback(() => {
+    if (selectedMissionId) {
+      startMission(selectedMissionId);
+      handleCloseBottomSheet();
     }
-  };
+  }, [selectedMissionId, startMission]);
 
   const getMissionIcon = (mission: Mission) => {
     if (mission.iconUrl) {
-      return <Image source={{ uri: mission.iconUrl }} style={styles.missionIcon} contentFit="contain" />;
+      return <Image source={mission.iconUrl} style={styles.missionIcon} contentFit="contain" />;
     }
 
     switch (mission.id) {
       case '1':
-        return <Image source={{ uri: ICON_RUN }} style={styles.missionIcon} contentFit="contain" />;
+      case 'c1':
+        return <Image source={ICON_RUN} style={styles.missionIcon} contentFit="contain" />;
       case '2':
-        return <BookIcon />;
+      case 'c2':
+      case 'r1':
+        return <Image source={ICON_BOOK} style={styles.missionIcon} contentFit="contain" />;
+      case '3':
+        return <Image source={ICON_CLOCK} style={styles.missionIcon} contentFit="contain" />;
+      case 'r2':
+      case 'r3':
+      case 'c3':
+        return <Image source={ICON_RUN} style={styles.missionIcon} contentFit="contain" />;
       case '4':
+      case 'r4':
         return <PhoneOffIcon />;
       default:
         return null;
     }
   };
 
-  const missions = getMissionsForSegment(selectedSegment);
+  const missions = getMissionsByStatus(selectedSegment);
   const showProgress = selectedSegment === 'in_progress';
+  const selectedMission = selectedMissionId ? getMissionById(selectedMissionId) : null;
+  const missionDetail = selectedMissionId ? MISSION_DETAIL_DATA[selectedMissionId] : null;
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -203,14 +132,14 @@ export default function MissionTab() {
                 id={item.id}
                 title={item.title}
                 subtitle={item.description}
-                iconComponent={getMissionIcon(item)}
+                iconComponent={selectedSegment !== 'completed' ? getMissionIcon(item) : null}
                 progress={item.progress}
                 showProgress={showProgress}
-                onPress={() => {
-                  if (selectedSegment === 'recommended') {
-                    handleOpenBottomSheet(item.id);
-                  }
-                }}
+                onPress={
+                  selectedSegment === 'recommended'
+                    ? () => handleOpenBottomSheet(item.id)
+                    : undefined
+                }
               />
             )}
             keyExtractor={(item) => item.id}
@@ -231,50 +160,70 @@ export default function MissionTab() {
         handleIndicatorStyle={styles.bottomSheetIndicator}
       >
         <BottomSheetView style={styles.bottomSheetContent}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.detailContent}>
-              <View style={styles.detailCard}>
-                <View style={styles.missionHeader}>
-                  <View style={styles.titleRow}>
-                    <Image source={{ uri: ICON_RUN }} style={styles.detailMissionIcon} contentFit="contain" />
-                    <Text style={styles.missionTitle}>러닝 2km</Text>
+          {selectedMission && (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.detailContent}>
+                <View style={styles.detailCard}>
+                  <View style={styles.missionHeader}>
+                    <View style={styles.titleRow}>
+                      {getMissionIcon(selectedMission) ? (
+                        <View style={styles.detailMissionIconContainer}>
+                          {getMissionIcon(selectedMission)}
+                        </View>
+                      ) : null}
+                      <Text style={styles.missionTitle}>{selectedMission.title}</Text>
+                    </View>
+                    {selectedMission.progress !== undefined && (
+                      <ProgressBar progress={selectedMission.progress} width={334} />
+                    )}
                   </View>
-                  <ProgressBar progress={0.635} width={334} />
+
+                  <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>
+                      {missionDetail?.fullDescription || selectedMission.description}
+                    </Text>
+                  </View>
                 </View>
 
-                <View style={styles.descriptionContainer}>
-                  <Text style={styles.description}>
-                    건강을 챙기는 습관을 만들고 싶은 당신,{'\n'}
-                    러닝 2km를 인증하면 습관 형성에 한발 더 가까워질 수 있어요.
+                {selectedMission.deadline && (
+                  <Text style={styles.deadline}>
+                    {new Date(selectedMission.deadline).toLocaleDateString('ko-KR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                    까지
                   </Text>
-                </View>
-              </View>
+                )}
 
-              <Text style={styles.deadline}>2026년 8월 20일까지</Text>
-
-              <View style={styles.actionSection}>
-                <View style={styles.participantsRow}>
-                  <View style={styles.avatarGroup}>
-                    {PARTICIPANT_AVATARS.map((avatar, index) => (
-                      <Image
-                        key={index}
-                        source={{ uri: avatar }}
-                        style={[styles.avatar, { marginLeft: index === 0 ? 0 : -13 }]}
-                        contentFit="cover"
-                      />
-                    ))}
+                <View style={styles.actionSection}>
+                  <View style={styles.participantsRow}>
+                    <View style={styles.avatarGroup}>
+                      {PARTICIPANT_AVATARS.map((avatar, index) => (
+                        <Image
+                          key={index}
+                          source={avatar}
+                          style={[styles.avatar, { marginLeft: index === 0 ? 0 : -13 }]}
+                          contentFit="cover"
+                        />
+                      ))}
+                    </View>
+                    <TouchableOpacity style={styles.shareButton} activeOpacity={0.7}>
+                      <Image source={SHARE_ICON} style={styles.shareIcon} contentFit="contain" />
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity style={styles.shareButton} activeOpacity={0.7}>
-                    <Image source={{ uri: SHARE_ICON }} style={styles.shareIcon} contentFit="contain" />
+
+                  <TouchableOpacity
+                    style={styles.startButton}
+                    activeOpacity={0.8}
+                    onPress={handleStartMission}
+                  >
+                    <Text style={styles.startButtonText}>미션 진행하기</Text>
                   </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.startButton} activeOpacity={0.8}>
-                  <Text style={styles.startButtonText}>미션 진행하기</Text>
-                </TouchableOpacity>
               </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
+          )}
         </BottomSheetView>
       </BottomSheet>
     </GestureHandlerRootView>
@@ -362,9 +311,9 @@ const styles = StyleSheet.create({
     gap: 38,
   },
   detailCard: {
-    backgroundColor: '#fff',
+    
     borderRadius: 16,
-    padding: 34,
+    padding: 20,
     gap: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -10 },
@@ -379,6 +328,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+  },
+  detailMissionIconContainer: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   detailMissionIcon: {
     width: 30,
@@ -401,6 +356,7 @@ const styles = StyleSheet.create({
     lineHeight: 28.8,
   },
   deadline: {
+    marginLeft:20,
     fontSize: 14,
     fontWeight: '400',
     color: '#94929c',
